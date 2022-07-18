@@ -17,10 +17,12 @@ $(function () {
   });
 });
 
-const ctx = document.getElementById('ItemChart');
-const data = {
+const sequential_ctx = document.getElementById('SequentialChart');
+const hourly_ctx = document.getElementById('HourlyChart');
+
+const sequential_data = {
   datasets: [{
-    data: price_data,
+    data: sequential_price,
     backgroundColor: '#ff6384',
     borderColor: '#ff6384',
     borderWidth: '1',
@@ -28,7 +30,7 @@ const data = {
     tension: 0.2,
     yAxisID: 'Price',
   }, {
-    data: quant_data,
+    data: sequential_quant,
     backgroundColor: '#36a2eb',
     borderColor: '#36a2eb',
     borderWidth: '1',
@@ -36,7 +38,29 @@ const data = {
     tension: 0.2,
     yAxisID: 'Quant',
   }],
-  labels: labels
+  labels: sequential_labels
+}
+
+
+const hourly_data = {
+  datasets: [{
+    data: hourly_price,
+    backgroundColor: '#ff6384',
+    borderColor: '#ff6384',
+    borderWidth: '1',
+    label: 'Price',
+    tension: 0.2,
+    yAxisID: 'Price',
+  }, {
+    data: hourly_quant,
+    backgroundColor: '#36a2eb',
+    borderColor: '#36a2eb',
+    borderWidth: '1',
+    label: 'Quant',
+    tension: 0.2,
+    yAxisID: 'Quant',
+  }],
+  labels: hourly_labels
 }
 
 const options = {
@@ -83,9 +107,14 @@ const options = {
     }
   }
 }
-
-const ItemChart = new Chart(ctx, {
+const SequentialChart = new Chart(sequential_ctx, {
   type: 'line',
-  data: data,
+  data: sequential_data,
+  options: options
+});
+
+const HourlyChart = new Chart(sequential_ctx, {
+  type: 'line',
+  data: sequential_data,
   options: options
 });

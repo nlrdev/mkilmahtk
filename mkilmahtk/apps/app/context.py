@@ -19,7 +19,7 @@ from .models import AH_Item, Item
 
 
 def get_main_context(request):
-    """     
+    """
     if "search_terms" in request.session:
         search_terms = pd.unique(
             list(t for t in request.session["search_terms"].split(","))
@@ -33,9 +33,9 @@ def get_main_context(request):
             try:
                 search_hist.append(get_object_or_404(Item, name__exact=s))
             except:
-                continue 
+                continue
     """
-    
+
     if "view_list" in request.session:
         view_list = pd.unique(
             list(i for i in request.session["view_list"].split(","))
@@ -50,7 +50,7 @@ def get_main_context(request):
     if is_get(request):
         return {
             "watchlist_items": "",
-           # "search_terms": search_terms,
+            # "search_terms": search_terms,
             "view_list": view_hist,
         }
 
@@ -97,12 +97,12 @@ def get_item_context(request):
 
     item = get_object_or_404(Item, item_id=_id)
     qs = list(AH_Item.objects.filter(item_id=_id).values())
-    
+
     if item.item_data != "":
         item_data = dict(ast.literal_eval(item.item_data))
     else:
         item_data = {}
-    
+
     count = len(qs)
     total = 0
 
@@ -114,29 +114,36 @@ def get_item_context(request):
         total += q
 
     df = pd.DataFrame.from_records(qs)
-    grouped = df.groupby(pd.Grouper(key='created',freq='H'))
-    
-    # lol what even is this.
-    #times = pd.DatetimeIndex(df.created)
-    #grouped = df.groupby(times.hour)    
+    sequential = df.groupby(pd.Grouper(key="created", freq="H"))
+    sequential_labels = []
+    sequential_price = []
+    sequential_quant = []
+    for group, matches in sequential:
+        sequential_labels.append(format_time(group))
+        sequential_price.append(min(list(a for a in matches.buyout), default=0))
+        sequential_quant.append(sum(list(a for a in matches.quantity)))
 
-    labels = []
-    price_data = []
-    quant_data = []
-
-    for group, matches in grouped: 
-        labels.append(format_time(group))
-        price_data.append(min(list(a for a in matches['buyout']), default=0)) 
-        quant_data.append(sum(list(a for a in matches['quantity'])))   
+    times = pd.DatetimeIndex(df.created)
+    hourly = df.groupby(times.hour)
+    hourly_labels = []
+    hourly_price = []
+    hourly_quant = []
+    for group, matches in hourly:
+        hourly_labels.append(f'{group} : 00')
+        hourly_price.append(min(list(a for a in matches.buyout), default=0))
+        hourly_quant.append(sum(list(a for a in matches.quantity)))
 
     if is_get(request):
         return {
             "time": time(),
             "name": item.name,
             "item_data": item_data,
-            "labels": labels,
-            "price_data": price_data,
-            "quant_data": quant_data,
+            "sequential_labels": sequential_labels,
+            "sequential_price": sequential_price,
+            "sequential_quant": sequential_quant,
+            "hourly_labels": hourly_labels,
+            "hourly_price": hourly_price,
+            "hourly_quant": hourly_quant,
             "count": count,
             "total": total,
         }
