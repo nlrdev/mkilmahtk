@@ -1,0 +1,83 @@
+version: "3"
+
+services:
+  mkilmahtk:
+    &mkilmahtk
+    build: .
+    image: localhost:5000/mkilmahtk:latest
+    # debug stuff
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    #
+    env_file:
+      - .env
+    restart: always
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn config.wsgi:application  -b 0.0.0.0:80"
+    container_name: mkilmahtk
+    volumes:
+      - ./mkilmahtk:/usr/src/app
+
+  mkilmahtk_scheduler:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_scheduler
+    command: celery -A config.celery beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - mkilmahtk
+
+  mkilmahtk_worker:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_worker
+    command: celery -A config.celery worker -l DEBUG -E
+    depends_on:
+      - mkilmahtk
+
+  mkilmahtk_flower:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_flower
+    command: celery -A config.celery flower --address=0.0.0.0 --port=5555
+    ports:
+      - 5555:5555
+    environment:
+      CELERY_BROKER_URL: amqp://devmin:devmin@dev_mq:5672/dhost_mq
+      CELERY_RESULT_BACKEND: redis://redis
+    depends_on:
+      - mkilmahtk_worker
+      - redis
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  mkilmahtk_nginx:
+    image: nginx:latest
+    restart: always
+    container_name: mkilmahtk_nginx
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.entrypoints=web"
+      - "traefik.http.routers.mkilmahtk_nginx.rule=Host(`mkilmahtk.localhost`)"
+      - "traefik.http.services.mkilmahtk_nginx.loadbalancer.server.port=80"
+    volumes:
+      - ./mkilmahtk:/usr/src/mkilmahtk
+      - ./nginx:/etc/nginx/conf.d/
+    depends_on:
+      - mkilmahtk
+
+  db-mkilmahtk:
+    image: postgres
+    restart: always
+    container_name: db-mkilmahtk
+    env_file:
+      - .env
+    volumes:
+      - mkilmahtk_data:/var/lib/postgresql/data
+
+volumes:
+  mkilmahtk_data:
+    external: true
+
+networks:
+  default:
+    external:
+      name: hostnet

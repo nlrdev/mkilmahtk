@@ -1,0 +1,12 @@
+{% extends 'main.html' %} 
+{% block main %}
+{% comment %} {% include "src/nav.html" %} {% endcomment %}
+{% block auth %}
+{% endblock %}
+{% if template %}
+<div id="content_wrapper">
+    {% include template %}
+</div>
+{% endif %}
+{% include "src/footer.html" %}
+{% endblock %}

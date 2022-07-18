@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+    mkilmahtk
+  </title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bs.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'jquery-ui/jquery-ui.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/chosen.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+  <link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
+  <link href="http://fonts.googleapis.com/css?family=Roboto Mono" rel="stylesheet" type="text/css" />
+  <script src="https://kit.fontawesome.com/5834225bd5.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <ul id="msg_queue" class="list-group" style="
+              position: absolute;
+              width: fit-content;
+              height: fit-content;
+              top: 50px;
+              right: 10px;
+              z-index: 2;
+            ">
+    {% include 'src/msgs.html' %}
+  </ul>
+  {% block main %}{% endblock %}
+</body>
+
+<script type="text/javascript" src="{% static 'js/jq.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chosen.jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/poppers.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bs.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/charts.js' %}"></script>
+<script type="text/javascript" src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
+
+{% if javascript %}
+{% for script in javascript %}
+<script type="text/javascript" src="{% static script %}"></script>
+{% endfor %}
+{% endif %}
+
+</html>

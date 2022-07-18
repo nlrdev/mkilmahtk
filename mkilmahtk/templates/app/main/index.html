@@ -1,0 +1,54 @@
+<div class="container-fluid justify-content-center" style="height: 100%; padding-top:69px;">
+    <div class="d-flex justify-content-center">
+        <div class="p-5 ">
+            {% csrf_token %}
+            <input placeholder="Search for item by 'Name' or 'ID'" type="text" class="form-control text-center big-font"
+                id="item_search" style="width: 50vw; height: 69px;">
+        </div>
+    </div>
+    <div class="text-center">
+        <div id="watchlist_wrapper">
+            {% include "./watchlist_items.html" %}
+        </div>
+    </div>
+    <div class="text-center">
+        <div id="search_wrapper">
+            {% include "./search_items.html" %}
+        </div>
+    </div>
+    <div id="search_load" class="p-5 container justify-content-center" style="display: none; width: 50vw;">
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+    </div>
+    {% if view_list or search_terms %}
+    <div class="text-center container p-5">
+        <!--br>
+        <h5>Search History</h5>
+        <div class="fb-container"> 
+            {{search_terms}} 
+            {% for t in search_terms %}
+            <a class="tt border border-dark rounded p-1" type="button" href="#"
+                style="text-decoration: None;">
+                <div class="fb-item-products">
+                    {{t}}
+                </div>
+            </a>
+            {% endfor %}
+        </div-->
+        <br>
+        <h5>Viewed Items</h5>
+        <div class="fb-container">
+            {% for i in view_list %}
+            <a class="tt border border-dark rounded p-1" type="button" href="{% url 'app' 'item' i.item_id %}"
+                style="text-decoration: None;">
+                <div class="fb-item-products">
+                    {{i.name}}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>

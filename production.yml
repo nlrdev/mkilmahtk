@@ -1,0 +1,90 @@
+version: "3"
+
+services:
+  mkilmahtk: &mkilmahtk
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: localhost:5000/mkilmahtk:latest
+    # debug stuff
+    stdin_open: true # docker run -i
+    tty: true # docker run -t
+    #
+    env_file:
+      - .env
+    restart: always
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && gunicorn config.wsgi:application  -b 0.0.0.0:80"
+    container_name: mkilmahtk
+    volumes:
+      - website_data:/usr/src/app
+
+  mkilmahtk_scheduler:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_scheduler
+    command: celery -A config.celery beat -l DEBUG --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - mkilmahtk
+
+  mkilmahtk_worker:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_worker
+    command: celery -A config.celery worker -l DEBUG -E
+    depends_on:
+      - mkilmahtk
+
+  mkilmahtk_flower:
+    <<: *mkilmahtk
+    container_name: mkilmahtk_flower
+    command: celery -A config.celery flower --address=0.0.0.0 --port=5555
+    environment:
+      CELERY_BROKER_URL: amqp://devmin:devmin@prod_mq:5672/dochost
+      CELERY_RESULT_BACKEND: redis://mkilmahtk_redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mkilmahtk_flower.rule=Host(`tq.silimasoftware.co.za`)"
+      - "traefik.http.routers.mkilmahtk_flower.entrypoints=websecure"
+      - "traefik.http.routers.mkilmahtk_flower.tls.certresolver=sslresolver"
+      - "traefik.http.services.mkilmahtk_flower.loadbalancer.server.port=5555"
+      - "traefik.http.routers.mkilmahtk_flower.middlewares=mkilmahtk_flower-auth"
+      - "traefik.http.middlewares.mkilmahtk_flower-auth.basicauth.users=devmin:$$apr1$$YH19JQk0$$yNYbkDVb8XQcBFQEurY9y1"
+    depends_on:
+      - mkilmahtk_worker
+      - mkilmahtk_redis
+
+  mkilmahtk_redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+  mkilmahtk_nginx:
+    build: ./nginx
+    restart: always
+    container_name: mkilmahtk_nginx
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mkilmahtk_nginx.entrypoints=websecure"
+      - "traefik.http.routers.mkilmahtk_nginx.tls.certresolver=sslresolver"
+      - "traefik.http.routers.mkilmahtk_nginx.rule=Host(`mkilmahtk.silimasoftware.co.za`)"
+      - "traefik.http.services.mkilmahtk_nginx.loadbalancer.server.port=80"
+    volumes:
+      - website_data:/usr/src/app
+    depends_on:
+      - mkilmahtk
+
+  db-mkilmahtk:
+    image: postgres
+    restart: always
+    container_name: db-mkilmahtk
+    env_file:
+      - .env
+    volumes:
+      - mkilmahtk_data:/var/lib/postgresql/data
+
+volumes:
+  mkilmahtk_data:
+  website_data:
+
+networks:
+  default:
+    external:
+      name: hostnet

@@ -1,0 +1,39 @@
+<div style="padding-top: 69px;">
+   <h1>{{name}} </h1>
+   {{item_data.item_class.name}}<br>
+   {{item_data.item_subclass.name}}
+   <h5>Auctions: [ {{count}} ] </h5>
+   <h5>Unique items: [ {{total}} ]</h5>
+    <div class="chart-container">
+        <canvas id="ItemChart"></canvas>
+    </div>
+    <script>
+        const labels = {{labels | safe}}
+        const price_data = {{price_data | safe}}
+        const quant_data = {{quant_data | safe }}
+    </script>
+</div>
+<!--table class="table text-light display">
+    <thead>
+        <tr>
+            <th>a_id</th>
+            <th>item_id</th>
+            <th>bid</th>
+            <th>buyout</th>
+            <th>quantity</th>
+            <th>time_left</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in ah_data %}
+        <tr>
+            <td>{{a.a_id}}</td>
+            <td>{{a.item_id}}</td>
+            <td>{{a.bid}}</td>
+            <td>{{a.buyout}}</td>
+            <td>{{a.quantity}}</td>
+            <td>{{a.time_left}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table-->

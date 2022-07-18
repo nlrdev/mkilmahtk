@@ -1,0 +1,11 @@
+<div class="fb-container">
+    {% for i in watchlist_items %}
+    <div class="fb-item-products">
+        <a type="button" href="{% url "app" "item" i.item_id %}" style="text-decoration: None;">
+            <div class="text-dark p-2">
+                {{i.name}}
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
