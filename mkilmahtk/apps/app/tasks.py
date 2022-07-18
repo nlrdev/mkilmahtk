@@ -70,6 +70,13 @@ def fetch_item_data():
                             "Authorization": f"Bearer {access_token}",
                         },
                     )
+                    item = item_data.json()
+                    _item.item_url = media['assets'][0]['value']
+                    _item.item_data = item
+                except:
+                    continue
+            if _item.item_media == "":
+                try:
                     item_media = requests.get(
                         url=f"https://us.api.blizzard.com/data/wow/media/item/{id}?namespace=static-classic-us",
                         params={":region":"us", "locale":"en_US"},
@@ -77,15 +84,12 @@ def fetch_item_data():
                             "Authorization": f"Bearer {access_token}",
                         },
                     )
-                    item = item_data.json()
                     media = item_media.json()
-                    _item.item_url = media['assets'][0]['value']
-                    _item.item_data = item
                     _item.item_media = media
-                    _item.save()
                 except:
                     continue
-
+            
+            _item.save()
             continue
 
         try:

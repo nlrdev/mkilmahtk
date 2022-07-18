@@ -119,6 +119,8 @@ def get_item_context(request):
         total += q
 
     df = pd.DataFrame.from_records(qs)
+    #df = pd.DatetimeIndex(df.created)
+    #df = df.last("24h")
     sequential = df.groupby(pd.Grouper(key="created", freq="H"))
     sequential_labels = []
     sequential_price = []
@@ -134,7 +136,7 @@ def get_item_context(request):
     hourly_price = []
     hourly_quant = []
     for group, matches in hourly:
-        hourly_labels.append(f'{group} : 00')
+        hourly_labels.append(f"{group} : 00")
         hourly_price.append(min(list(a for a in matches.buyout), default=0))
         hourly_quant.append(sum(list(a for a in matches.quantity)))
 
