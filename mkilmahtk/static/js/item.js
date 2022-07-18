@@ -19,6 +19,13 @@ $(function () {
       label: 'Quant',
       tension: 0.2,
       yAxisID: 'Quant',
+    },{
+      data: sequential_ma,
+      backgroundColor: '#ff63852f',
+      borderColor: '#ff63852f',
+      borderWidth: '1',
+      label: 'MA',
+      tension: 0.2,
     }],
     labels: sequential_labels
   }
@@ -41,6 +48,13 @@ $(function () {
       label: 'Quant',
       tension: 0.2,
       yAxisID: 'Quant',
+    },{
+      data: hourly_ma,
+      backgroundColor: '#ff63852f',
+      borderColor: '#ff63852f',
+      borderWidth: '1',
+      label: 'MA',
+      tension: 0.2,
     }],
     labels: hourly_labels
   }

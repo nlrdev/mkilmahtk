@@ -1,6 +1,7 @@
 import json
 import ast
 import pandas as pd
+import numpy as np
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
@@ -13,6 +14,7 @@ from .core import (
     log,
     time,
     format_time,
+    date_hour,
     bleach,
 )
 from .models import AH_Item, Item
@@ -119,8 +121,8 @@ def get_item_context(request):
         total += q
 
     df = pd.DataFrame.from_records(qs)
-    #df = pd.DatetimeIndex(df.created)
-    #df = df.last("24h")
+    # df = pd.DatetimeIndex(df.created)
+    # df = df.last("24h")
     sequential = df.groupby(pd.Grouper(key="created", freq="H"))
     sequential_labels = []
     sequential_price = []
@@ -136,23 +138,33 @@ def get_item_context(request):
     hourly_price = []
     hourly_quant = []
     for group, matches in hourly:
-        hourly_labels.append(f"{group} : 00")
+        hourly_labels.append(f"{group}:00")
         hourly_price.append(min(list(a for a in matches.buyout), default=0))
         hourly_quant.append(sum(list(a for a in matches.quantity)))
+
+    filter_lenth = 10
+
+    sequential_ma = np.convolve(sequential_price, np.ones((filter_lenth)), mode="same")
+    sequential_ma /= filter_lenth
+
+    hourly_ma = np.convolve(hourly_price, np.ones((filter_lenth)), mode="same")
+    hourly_ma /= filter_lenth
 
     if is_get(request):
         return {
             "time": time(),
             "name": item.name,
             "item_data": item_data,
-            "sequential_labels": sequential_labels,
-            "sequential_price": sequential_price,
-            "sequential_quant": sequential_quant,
+            "sequential_labels": sequential_labels[-24:],
+            "sequential_price": sequential_price[-24:],
+            "sequential_quant": sequential_quant[-24:],
             "hourly_labels": hourly_labels,
             "hourly_price": hourly_price,
             "hourly_quant": hourly_quant,
             "count": count,
             "total": total,
+            "sequential_ma": list(sequential_ma),
+            "hourly_ma": list(hourly_ma),
         }
 
     if is_ajax(request):

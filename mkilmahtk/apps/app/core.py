@@ -90,8 +90,9 @@ def fmtGold(value):
 
 
 def date_hour(time):
-    return time.strftime("%H")
+    t = datetime.hour(hour=time)
+    return t.strftime("%H")
 
 
 def format_time(time):
-    return time.strftime("%m/%d/%Y, %H:%M:%S")
+    return time.strftime("%m/%d, %H:%M")
