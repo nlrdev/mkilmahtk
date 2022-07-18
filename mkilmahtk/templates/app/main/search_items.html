@@ -4,11 +4,11 @@
     {% for i in search_items %}
     <a data-bs-toggle="tooltip" data-bs-html="true"
         title="<em class='tt p-3'>{{i.item_id}}</em>"
-        class="s_item border border-1 border-dark" type="button" href="{% url 'app' 'item' i.item_id %}"
+        class="s_item bg-dark border border-1 border-dark" type="button" href="{% url 'app' 'item' i.item_id %}"
         style="text-decoration: None;">
         <div class="fb-item-items">
             <img src="{{ i.item_url }}" class="img-fluid shadow"><br>
-            <span class="text-light">{{i.name | truncatechars:20 }}</span>
+            <span class="text-light quality-color-{{i.item_data.quality.type | lower}}">{{i.name | truncatechars:20 }}</span>
         </div>
     </a>
     {% endfor %}

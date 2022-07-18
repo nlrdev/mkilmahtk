@@ -2,8 +2,8 @@ body,
 html {
     height: 100%;
     font-family: 'Roboto', sans-serif;
-    background-color: #0a0d15 !important;
-    color: #d3d4d4 !important;
+    background-color: #181818 !important;
+    color: #e5e7eb !important;
     scroll-behavior: smooth;
 }
 
@@ -47,18 +47,33 @@ tr.htb:hover {
     color: #ffffff;
 }
 
-.bg-dk {
-    background-color: #0b0d12 !important;
+.quality-color-common{
+    color: white !important;
+} 
+.quality-color-uncommon{
+    color: #1EFF00 !important;
+} 
+.quality-color-rare{
+    color: #0070FF !important;
+} 
+.quality-color-epic{
+    color: #a335ee !important;
+} 
+.quality-color-legendary{
+    color: #ff8000 !important;
+} 
+
+
+
+
+.bg-dark {
+    background-color: #101010 !important;
 }
 
 .bg-lt {
     background-color: #ffffff !important;
 }
 
-.s_item {
-    background-color: #0b0d12 !important;
-    color: #ffffff !important;
-}
 
 .s_item:hover {
     transform: scale(1.1);

@@ -77,6 +77,10 @@ def get_main_context(request):
             )
             .all()
         )
+
+        for i in search_items:
+            i.item_data = dict(ast.literal_eval(i.item_data))
+
         return {
             "html": render_to_string(
                 "app/main/search_items.html",
