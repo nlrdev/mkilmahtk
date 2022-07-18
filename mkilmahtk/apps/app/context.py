@@ -79,7 +79,8 @@ def get_main_context(request):
         )
 
         for i in search_items:
-            i.item_data = dict(ast.literal_eval(i.item_data))
+            if i.item_data:
+                i.item_data = dict(ast.literal_eval(i.item_data))
 
         return {
             "html": render_to_string(
