@@ -4,6 +4,7 @@ import pandas as pd
 from functools import reduce
 from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
+from pyparsing import empty
 from .core import (
     is_ajax,
     render_to_string,
@@ -11,6 +12,7 @@ from .core import (
     is_get,
     log,
     time,
+    format_time,
     bleach,
 )
 from .models import AH_Item, Item
@@ -103,6 +105,7 @@ def get_item_context(request):
     
     count = len(qs)
     total = 0
+
     for n in qs:
         p = float(n["buyout"]) / 10000
         q = float(n["quantity"])
@@ -110,19 +113,21 @@ def get_item_context(request):
         n["quantity"] = q
         total += q
 
-
     df = pd.DataFrame.from_records(qs)
-    times = pd.DatetimeIndex(df.created)
-    grouped = df.groupby(times.hour)
+    grouped = df.groupby(pd.Grouper(key='created',freq='H'))
+    
+    # lol what even is this.
+    #times = pd.DatetimeIndex(df.created)
+    #grouped = df.groupby(times.hour)    
 
     labels = []
     price_data = []
     quant_data = []
 
-    for group, matches in grouped:
-        labels.append(group)
-        price_data.append(min(a for a in matches.buyout))
-        quant_data.append(sum(a for a in matches.quantity))
+    for group, matches in grouped: 
+        labels.append(format_time(group))
+        price_data.append(min(list(a for a in matches['buyout']), default=0)) 
+        quant_data.append(sum(list(a for a in matches['quantity'])))   
 
     if is_get(request):
         return {
