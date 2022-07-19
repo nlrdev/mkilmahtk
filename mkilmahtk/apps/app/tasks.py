@@ -95,6 +95,7 @@ def fetch_item_data():
 
             if update == True:
                 _item.save()
+                continue
 
         try:
             item_data = requests.get(
