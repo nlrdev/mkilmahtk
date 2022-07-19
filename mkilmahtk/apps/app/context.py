@@ -64,22 +64,40 @@ def get_main_context(request):
             request.session["search_terms"] = f"{s}"
 
         words = list(i for i in s.split(" "))
-        search_items = (
-            Item.objects.annotate(
-                search=SearchVector(
-                    "item_id",
-                    "name",
-                ),
-            )
-            .filter(
-                reduce(
-                    lambda x, y: x & y,
-                    [Q(search__contains=word) for word in words],
+        if request.action == "item_search":
+            search_items = (
+                Item.objects.annotate(
+                    search=SearchVector(
+                        "item_id",
+                        "name",
+                    ),
                 )
+                .filter(
+                    reduce(
+                        lambda x, y: x & y,
+                        [Q(search__contains=word) for word in words],
+                    )
+                )
+                .all()
             )
-            .all()
-        )
-
+            
+        if request.action == "item_search_exact":
+            search_items = (
+                Item.objects.annotate(
+                    search=SearchVector(
+                        "item_id",
+                        "name",
+                    ),
+                )
+                .filter(
+                    reduce(
+                        lambda x, y: x & y,
+                        [Q(search=word) for word in words],
+                    )
+                )
+                .all()
+            )
+            
         for i in search_items:
             if i.item_data:
                 i.item_data = dict(ast.literal_eval(i.item_data))

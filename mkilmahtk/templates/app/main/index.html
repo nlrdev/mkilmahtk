@@ -2,8 +2,16 @@
     <div class="d-flex justify-content-center">
         <div class="p-5">
             {% csrf_token %}
-            <input placeholder="Search for item by 'Name' or 'ID'" type="text" class="form-control text-center big-font shadow"
-                id="item_search" style="width: 50vw; height: 69px;">
+            <div class="row">
+                <div class="col">
+                    <input placeholder="Search for item by 'Name' or 'ID'" type="text" class="form-control text-center big-font shadow"
+                    id="item_search_exact" style="width: 40vw; height: 69px;">
+                </div>
+                <div class="col">
+                    <input placeholder="Search Keyword" type="text" class="form-control text-center big-font shadow"
+                    id="item_search" style="width: 40vw; height: 69px;">                   
+                </div>
+            </div>
         </div>
     </div>
     <div class="text-center">

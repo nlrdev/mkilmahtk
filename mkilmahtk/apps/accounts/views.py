@@ -85,6 +85,6 @@ def registration(request):
             request.session["next"] = request.GET["next"]
         else:
             request.session["next"] = "/"
-        return render(request, "src/login.html")
+        return render(request, "src/registration.html")
     else:
         return forbidden()

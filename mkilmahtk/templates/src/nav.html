@@ -19,7 +19,7 @@
         {% if 'profile' in request.path %}nav_selected{% endif %}">
         <i class="fa-solid fa-id-card"></i>
         </a>
-        <a class="nav-link" href="javascript:{document.getElementById('logout').submit()}"><i
+        <a class="nav-link text-light" href="javascript:{document.getElementById('logout').submit()}"><i
             class="fas fa-sign-out-alt"></i></a>
         <form id="logout" method="POST" action="{% url 'logout' %}">
             {% csrf_token %}
