@@ -77,10 +77,8 @@ class ServiceUser(Account):
         user_account.save()
         return user_account
 
-
     def reset_password(self):
         pass
-
 
     def last_login(self):
         return self.login_time.latest("login_time")

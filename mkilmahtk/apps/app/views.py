@@ -1,5 +1,3 @@
-from django.contrib import auth
-from django.contrib.auth.decorators import login_required
 from .core import (
     HttpResponse,
     bleach,
@@ -15,7 +13,6 @@ from .core import (
     get_object_or_404,
 )
 from .context import get_main_context, get_item_context
-from accounts.models import LastLogin, ServiceUser
 
 
 def app(request, page="main", function="index"):
@@ -71,84 +68,3 @@ def app(request, page="main", function="index"):
 
 def no_context(*args, **kwargs):
     return {}
-
-
-@login_required(login_url="/login/")
-def logout(request):
-    request.session["user_token"] = "0"
-    context = {"js": "js/logout.js"}
-    if is_post(request):
-        auth.logout(request)
-        return render(request, "src/logout.html", context)
-    elif is_get(request):
-        return render(request, "src/logout.html")
-    else:
-        return forbidden()
-
-
-def login(request):
-    if is_post(request):
-        user = auth.authenticate(
-            username=request.POST["email"], password=request.POST["password"]
-        )
-        if user is not None:
-            auth.login(request, user)
-            service_user = get_object_or_404(ServiceUser, user=user)
-            push_msg(
-                request,
-                f"Welcome back: [{user.username}] your last login was on: [{service_user.last_login()}]",
-                "alert-primary",
-            )
-            login_time = LastLogin(user=service_user)
-            login_time.save()
-            next = request.session.pop("next")
-            return redirect(next)
-        else:
-            return render(
-                request,
-                "src/login.html",
-                {"error": "Incorrect login"},
-            )
-            
-    elif is_get(request):
-        if "next" in request.GET:
-            request.session["next"] = request.GET["next"]
-        else:
-            request.session["next"] = "/"
-        return render(request, "src/login.html")
-    else:
-        return forbidden()
-
-
-def registration(request):
-    if is_post(request):
-        user = auth.authenticate(
-            username=request.POST["email"], password=request.POST["password"]
-        )
-        if user is not None:
-            auth.login(request, user)
-            service_user = get_object_or_404(ServiceUser, user=user)
-            push_msg(
-                request,
-                f"Welcome back: [{user.username}] your last login was on: [{service_user.last_login()}]",
-                "alert-primary",
-            )
-            login_time = LastLogin(user=service_user)
-            login_time.save()
-            next = request.session.pop("next")
-            return redirect(next)
-        else:
-            return render(
-                request,
-                "src/login.html",
-                {"error": "Incorrect login"},
-            )
-            
-    elif is_get(request):
-        if "next" in request.GET:
-            request.session["next"] = request.GET["next"]
-        else:
-            request.session["next"] = "/"
-        return render(request, "src/login.html")
-    else:
-        return forbidden()

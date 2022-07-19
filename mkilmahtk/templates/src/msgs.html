@@ -1,6 +1,6 @@
 {% if messages %} {% for message in messages %}
-<li onmouseover="$(this).addClass('border-4  border-{{ message.tags }}')" onmouseleave="$(this).fadeOut(1000)" onmouseenter="$(this).stop().fadeIn(0)"
-  class="alert float-right border-2 border-{{ message.tags }} alert-{{ message.tags }} alert-dismissible list-group-item fade show p-3 list-group-item rounded shadow"
+<li onmouseover="$(this).addClass('border-4  border-success')" onmouseleave="$(this).fadeOut(1000)" onmouseenter="$(this).stop().fadeIn(0)"
+  class="bg-dark alert float-right border border-2 border-light {{ message.tags }} alert-dismissible list-group-item fade show p-3 list-group-item rounded shadow"
   role="alert">
   <span>{{ message }} </span>
 </li>

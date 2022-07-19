@@ -1,33 +1,38 @@
-<nav class="navbar navbar-expand-md text-uppercase nav_font fixed-top bg-dark p-0 shadow">
+<nav class="navbar navbar-expand-md text-uppercase nav_font fixed-top p-0 shadow">
     <a class="btn text-white" href="{% url 'app' %}">
-        <img width="24px" height="24px"  type="image/svg" src="https://render.worldofwarcraft.com/classic-us/icons/56/inv_misc_rune_01.jpg" />
-        MKILMAHTK
-        <img width="24px" height="24px" type="image/svg" src="https://render.worldofwarcraft.com/classic-us/icons/56/inv_misc_rune_01.jpg" /></a>
+        <img width="22px" height="22px" type="image/svg"
+            src="https://render.worldofwarcraft.com/classic-us/icons/56/inv_misc_rune_01.jpg" />
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav"
         aria-expanded="false" aria-controls="#main_nav">
         <i class="fas fa-bars"></i>
     </button>
-    <div class="collapse navbar-collapse me-auto" id="main_nav">
-        {% if authenticated%}
-        <a href="{% url 'app' 'TSM' %}" class="text-red ms-auto
-        {% if 'shop' in request.path %}nav_selected border-top{% endif %}">
-            <i class="fas fa-plus-circle"></i> New Service
+    <div class="collapse navbar-collapse" id="main_nav">
+        {% if user.is_authenticated %}
+        <button class="btn text-light ms-auto">
+            <i class="fa-solid fa-upload"></i>
+        </button>
+        <button class="btn text-light ">
+            <i class="fa-solid fa-sliders"></i>
+        </button>
+        <a href="{% url  'app' 'profile' %}" class="btn text-light
+        {% if 'profile' in request.path %}nav_selected{% endif %}">
+        <i class="fa-solid fa-id-card"></i>
         </a>
-        <a href="{% url  'app' 'Reports' %}" class="text-white
-        {% if 'dashboard' in request.path %}nav_selected border-top{% endif %}">
-            Dashboard
-        </a>
-        <a class="btn text-light" href="{% url 'logout' %}">
-            <i class="fas fa-sign-in-alt"></i>
-        </a>
+        <a class="nav-link" href="javascript:{document.getElementById('logout').submit()}"><i
+            class="fas fa-sign-out-alt"></i></a>
+        <form id="logout" method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <input type="hidden" />
+        </form>
         {% else %}
         <a href="{% url 'registration' %}" class="btn text-light ms-auto 
         {% if 'registration' in request.path %}nav_selected border-top{% endif %}">
-            Register <i class="fa fa-user-plus"></i>
+            <i class="fa fa-user-plus"></i>
         </a>
         <a class="btn text-light
         {% if 'login' in request.path %}nav_selected border-top{% endif %}" href="{% url 'login' %}">
-            Login <i class="fas fa-sign-in-alt"></i>
+            <i class="fas fa-sign-in-alt"></i>
         </a>
         {% endif %}
     </div>
