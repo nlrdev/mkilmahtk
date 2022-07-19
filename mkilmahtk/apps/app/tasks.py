@@ -10,7 +10,7 @@ from celery import shared_task
 def fetch_ah_data(relm=4476, ah=6):
     """
     This task pulls a dump of the specified 'auction house' from specified 'relm'
-    
+
     """
     access_token = api_auth()
     ah_data = requests.get(
@@ -58,9 +58,10 @@ def fetch_item_data():
         id = next(_ids)
         if l.filter(item_id=id).exists():
             """
-            This is just a hack to update the database with any new fields overtime without much effort    
+            This is just a hack to update the database with any new fields overtime without much effort
             """
             _item = get_object_or_404(Item, item_id=id)
+            update - False
             if _item.item_data == "":
                 try:
                     item_data = requests.get(
@@ -71,26 +72,29 @@ def fetch_item_data():
                         },
                     )
                     item = item_data.json()
-                    _item.item_url = media['assets'][0]['value']
+                    _item.item_url = media["assets"][0]["value"]
                     _item.item_data = item
+                    update = True
                 except:
                     continue
+
             if _item.item_media == "":
                 try:
                     item_media = requests.get(
                         url=f"https://us.api.blizzard.com/data/wow/media/item/{id}?namespace=static-classic-us",
-                        params={":region":"us", "locale":"en_US"},
+                        params={":region": "us", "locale": "en_US"},
                         headers={
                             "Authorization": f"Bearer {access_token}",
                         },
                     )
                     media = item_media.json()
                     _item.item_media = media
+                    update = True
                 except:
                     continue
-            
-            _item.save()
-            continue
+
+            if update == True:
+                _item.save()
 
         try:
             item_data = requests.get(
@@ -102,7 +106,7 @@ def fetch_item_data():
             )
             item_media = requests.get(
                 url=f"https://us.api.blizzard.com/data/wow/media/item/{id}?namespace=static-classic-us",
-                params={":region":"us", "locale":"en_US"},
+                params={":region": "us", "locale": "en_US"},
                 headers={
                     "Authorization": f"Bearer {access_token}",
                 },
@@ -113,7 +117,7 @@ def fetch_item_data():
         item = item_data.json()
         if "code" in item:
             continue
-        
+
         media = item_media.json()
         if "code" in media:
             continue
@@ -122,7 +126,7 @@ def fetch_item_data():
         _item = Item(
             item_id=item["id"],
             name=item["name"],
-            item_url=media['assets'][0]['value'],
+            item_url=media["assets"][0]["value"],
             item_data=item,
             item_media=media,
         )

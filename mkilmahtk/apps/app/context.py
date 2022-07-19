@@ -121,8 +121,6 @@ def get_item_context(request):
         total += q
 
     df = pd.DataFrame.from_records(qs)
-    # df = pd.DatetimeIndex(df.created)
-    # df = df.last("24h")
     sequential = df.groupby(pd.Grouper(key="created", freq="H"))
     sequential_labels = []
     sequential_price = []
