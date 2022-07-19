@@ -61,7 +61,7 @@ def fetch_item_data():
             This is just a hack to update the database with any new fields overtime without much effort
             """
             _item = get_object_or_404(Item, item_id=id)
-            update - False
+            update = False
             if _item.item_data == "":
                 try:
                     item_data = requests.get(
