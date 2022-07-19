@@ -76,7 +76,7 @@ $(function () {
                     val = 0
                 }
             }, 10);
-            value = $("#item_search").val();
+            value = $("#item_search_exact").val();
             if (value.length >= minlength && timer <= 0) {
                 if (req != null) req.abort();
                 req = $.ajax({

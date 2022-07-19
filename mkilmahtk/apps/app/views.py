@@ -21,16 +21,16 @@ def app(request, page="main", function="index"):
     request.current_page = bleach.clean(request.path.split("/")[-2])
 
     if request.POST.get("action"):
-        request._action = bleach.clean(request.POST.get("action"))
+        request.action = bleach.clean(request.POST.get("action"))
     else:
-        request._action = request.page
+        request.action = request.page
 
     context = {
         "current_page": request.current_page if request.current_page != "" else "main",
         "page": request.page,
         "function": request.function,
         "template": f"app/{request.page}/index.html",
-        "action": request._action,
+        "action": request.action,
         "javascript": [
             f"js/{request.page}.js",
         ],

@@ -64,6 +64,7 @@ def get_main_context(request):
             request.session["search_terms"] = f"{s}"
 
         words = list(i for i in s.split(" "))
+
         if request.action == "item_search":
             search_items = (
                 Item.objects.annotate(
@@ -80,7 +81,7 @@ def get_main_context(request):
                 )
                 .all()
             )
-            
+
         if request.action == "item_search_exact":
             search_items = (
                 Item.objects.annotate(
@@ -90,14 +91,11 @@ def get_main_context(request):
                     ),
                 )
                 .filter(
-                    reduce(
-                        lambda x, y: x & y,
-                        [Q(search=word) for word in words],
-                    )
+                    search=s
                 )
                 .all()
             )
-            
+
         for i in search_items:
             if i.item_data:
                 i.item_data = dict(ast.literal_eval(i.item_data))
