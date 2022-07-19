@@ -29,8 +29,8 @@ class Item(models.Model):
     name = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
     item_url = models.CharField(max_length=500, default="")
-    item_data = models.CharField(max_length=5000, default="")
-    item_media = models.CharField(max_length=5000, default="")
+    item_data = models.CharField(max_length=10000, default="")
+    item_media = models.CharField(max_length=10000, default="")
     def __str__(self):
         return self.name
     
